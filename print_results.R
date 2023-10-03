@@ -1,5 +1,16 @@
 ################# PRINT RESULTS #############################
 
+# object_result: List with results from sample size determination.
+# When the evaluation is for only inequalities hypotheses, the list have the following 
+# elements: n1 (numeric), n2 (numeric), eta (numeric), data (matrix),
+# hypotheses (string), BF.threshold (numeric), evaluation (string).
+# When one of the hypotheses has only equality the list have lists nested. Each 
+# nested list is the result of the SSD with a different value of fraction b. 
+# The nested lists have the following: n1, n2, Proportion.BF01, Proportion.BF10,
+# b.frac, data.H0, data.H1, marker.H0, and marker.H1.
+# Outside the nested lists, the main list have hypotheses and BF.threshold. 
+
+
 print_results <- function(object_result) {
     title <- "Final sample size"
     cat(paste("\n", title, "\n", sep = ""))
