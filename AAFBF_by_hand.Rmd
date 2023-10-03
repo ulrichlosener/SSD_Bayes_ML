@@ -8,37 +8,40 @@ output: html_document
 This script based on the paper "Approximated adjusted fractional Bayes factors: A general method for testing informative hypotheses" by Gu, Mulder and Hoijtink (2018)
 
 Two hypotheses of interest:    
- - H0: beta = 0   
- - H1: beta > 0 
+ - H1: beta = 0   
+ - H2: beta > 0 
  
 ```{r}
 library(bain)
 ```
 
- 
+prior under the unconstrained hypothesis: $\pi_u^\ast \sim N(0, \frac{\sigma^2}{b})$     
+posterior under the unconstrained hypothesis: $\pi_u \sim N(\hat{\beta}, \sigma^2)$ 
+
 ```{r}
 # specify input values
 estimate <- 1              # estimate for beta
 names(estimate) <- "est"   # give the estimate a name that the hypothesis argument in bain can refer to
 sigma_estimate <- .1       # SE of that estimate
 N <- 100                   # sample size
-b <- 1/N                   # b fraction according to minimal training sample (b=(J+1)/N)
+b <- 1/N                   # b fraction 
 
 # prior ~ N(0, sigma_estimate/b)
 # posterior ~ N(estimate, sigma_estimate)
 
 # calculate complexity and fit of H0
-comp0 <- dnorm(0, mean=0, sd=sqrt(sigma_estimate/b))     # overlap of parameter under H0 and unconstrained prior -> density of the prior under Hu at the focal point 0
-fit0 <- dnorm(0, mean=estimate, sd=sqrt(sigma_estimate)) # overlap of parameter under H0 and posterior -> density of the posterior at focal point 0
-AAFBF0u <- fit0/comp0                                    # AAFBF of H0 vs Hu
+comp1 <- dnorm(0, mean=0, sd=sqrt(sigma_estimate/b))     # overlap of parameter under H0 and unconstrained prior -> density of the prior under Hu at the focal point 0
+fit1 <- dnorm(0, mean=estimate, sd=sqrt(sigma_estimate)) # overlap of parameter under H0 and posterior -> density of the posterior at focal point 0
+AAFBF1u <- fit1/comp1                                    # AAFBF of H0 vs Hu
 
 # calculate complexity and fit of 1
-comp1 <- pnorm(0, mean=0, sd=sqrt(sigma_estimate/b))         # always .5 for H1
-fit1 <- 1 - pnorm(0, mean=estimate, sd=sqrt(sigma_estimate)) # the fit is equal to 1 - the fit of the complement
-AAFBF1u <- fit1/comp1                                        # AAFBF of H0 vs Hu
+comp2 <- pnorm(0, mean=0, sd=sqrt(sigma_estimate/b))         # always .5 for H1
+fit2 <- 1 - pnorm(0, mean=estimate, sd=sqrt(sigma_estimate)) # the fit is equal to 1 - the fit of the complement
+AAFBF2u <- fit2/comp2                                        # AAFBF of H0 vs Hu
 
 # compare with output from bain
 bain(estimate, hypothesis = c("est=0; est>0"), Sigma = as.matrix(sigma_estimate), n=N, fraction = 1)
 
+cat(c("\n","\n", "BF.u for H1 by hand:", AAFBF1u, "\n", "BF.u for H2 by hand:", AAFBF2u, "\n"))
 ```
 
